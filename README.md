@@ -33,11 +33,16 @@ The file gets created *before* Q1 and updated after every answer — not written
 
 Order is Goal → Acceptance → Boundary → Data/structure → Interaction → Wording, and there's an enforcement gate: if any of the first three is still open, the next question may only target an open one. Without that gate, user answers drag you topic-by-topic and Acceptance silently never gets asked.
 
-**四 · Close** — Fill in the remaining sections, then a self-check: can every acceptance criterion be traced back to a `#N` decision or the user's own words? Anything you invented gets marked as unconfirmed rather than blended in with what was agreed.
+**四 · Close** — Fill in the remaining sections, then a self-check: can every acceptance criterion be traced back to a `D`-numbered decision or the user's own words? Anything you invented gets marked as unconfirmed rather than blended in with what was agreed.
 
 ## Stop condition
 
-Not "enough questions asked" — "nothing left to guess." Five dimensions scored 0–1: Goals, Acceptance, Boundaries, Alternatives, Assumptions. Mean above 0.35 means keep going. Anything explicitly logged as open (with who decides and by when) doesn't count against you.
+Two hard signals come first, and the score only breaks ties:
+
+1. **Has the gate been passed?** Goals, Acceptance and Boundaries each need a real `D`-numbered decision — a restatement of what the user said doesn't count. Not passed means keep asking, whatever the score says.
+2. **Does every requirement survive the test?** If you can't write it as a checkable sentence, it isn't settled.
+
+Only when both pass does the five-dimension score (Goals / Acceptance / Boundaries / Alternatives / Assumptions, 0–1 each) decide whether to close or run another round. Its job there is to surface a neglected dimension, not to be the verdict. The scale is banded, not measured — higher is clearer, and don't let a 0.60-vs-0.65 difference make the decision. Anything explicitly logged as open (with who decides and by when) doesn't count against you.
 
 ## Install
 
@@ -58,11 +63,11 @@ cp -r requirement-forge ~/.agents/skills/         # user-level, all projects
 
 | File | Lines | Purpose |
 | :--- | ---: | :--- |
-| `SKILL.md` | 342 | The workflow. This is the skill. |
-| `assets/需求文档模板.md` | 130 | 9-section output template + interview log (Chinese) |
-| `references/question-bank.md` | 115 | Questions by task type + "anti-questions" for evasive answers |
-| `DESIGN.md` | 408 | Every mechanism traced to its upstream source, what was rejected and why, and the revision log |
-| `tests/README.md` | 210 | 8 real test cases across three rounds, including failures found |
+| `SKILL.md` | 347 | The workflow. This is the skill. |
+| `assets/需求文档模板.md` | 135 | 9-section output template + interview log (Chinese) |
+| `references/question-bank.md` | 135 | Questions by task type + "anti-questions" for evasive answers |
+| `DESIGN.md` | 407 | Every mechanism traced to its upstream source, what was rejected and why, and the revision log |
+| `tests/README.md` | 171 | 8 real test cases across three rounds, including failures found |
 
 ## What it borrows and what it changes
 
@@ -71,7 +76,7 @@ cp -r requirement-forge ~/.agents/skills/         # user-level, all projects
 - **Frontier discipline** from [mattpocock/skills](https://github.com/mattpocock/skills) `grilling` — but changed from "ask the whole frontier in one round" to "ask one." The discipline stays, the batching goes.
 - **Three gates before any question** from [chenlu-hung/my-skills](https://github.com/chenlu-hung/my-skills).
 - **Confidence numbers, and the "what would you actually want if you didn't have to justify it?" probe** from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) `interview-me`.
-- **Five-dimension ambiguity scoring** from [max4c/skills](https://github.com/max4c/skills) — three thresholds collapsed into one at 0.35.
+- **Five-dimension ambiguity scoring** from [max4c/skills](https://github.com/max4c/skills) — three thresholds collapsed into one, and the scale flipped so higher means clearer.
 - **Write-as-you-go** from [EricTechPro/grill-me-checkpoint](https://github.com/EricTechPro/grill-me-checkpoint).
 - **"Silently deciding for the user is overreach; deciding in the open is diligence"** from [KKKKhazix/khazix-skills](https://github.com/KKKKhazix/khazix-skills) `leader`.
 - **Questions must be full interrogatives with a plain-language "why it matters"** from [github/spec-kit](https://github.com/github/spec-kit) `clarify`.
@@ -82,11 +87,12 @@ No upstream code was copied. Mechanisms and a few phrasing ideas were re-written
 
 ## Known gaps
 
-**The 0.35 threshold is borderline.** The one long-flow test that reached the exit gate scored 0.30 — 0.05 under the line. Rescoring the same session with an equally defensible reading (Acceptance 0.75, Alternatives 0.5) gives 0.40 and flips the verdict to "keep asking." The threshold is sensitive to how you score. Whether it should drop to 0.30, or switch to "any dimension ≥ 0.5 means continue," needs more real sessions.
+**The five-dimension score is the weakest part.** The one long-flow test that reached the exit gate landed 0.05 above the line, and rescoring the same session with an equally defensible reading flips the verdict. That's why the stop condition now leans on two checkable signals (gate passed, every requirement testable) and treats the mean as a second opinion. The scale still has no anchors; two people can disagree by 0.25 on the same session.
 
 **The enforcement gate was validated by recovery, not prevention.** In testing, the out-of-order question had already been asked; the gate's fallback clause is what caught it. It should prevent drift when nobody is scripting the questions, but that's a design argument, not evidence.
 
 **"Update the file after every answer" got violated in testing.** The rule is right; compliance is not automatic. Worth a harder checkpoint if it keeps slipping.
+
 
 ## Language
 
