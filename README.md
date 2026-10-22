@@ -29,7 +29,11 @@ By the time the questions start, every one of them lands.
 
 **三 · Interrogate** — One question at a time, each with a recommended answer and a one-line "why this matters." Questions are ordered by a decision tree: only ask what sits on the frontier (prerequisites already settled). Before any question, three gates: will the answer change the outcome, can I look it up myself, is there an obvious default.
 
-**四 · Write** — Fill in the template. Keep writing as you go, not at the end — context gets compacted, the file is the only reliable record.
+The file gets created *before* Q1 and updated after every answer — not written at the end. Conversation context gets compacted; the file is what survives.
+
+Order is Goal → Acceptance → Boundary → Data/structure → Interaction → Wording, and there's an enforcement gate: if any of the first three is still open, the next question may only target an open one. Without that gate, user answers drag you topic-by-topic and Acceptance silently never gets asked.
+
+**四 · Close** — Fill in the remaining sections, then a self-check: can every acceptance criterion be traced back to a `#N` decision or the user's own words? Anything you invented gets marked as unconfirmed rather than blended in with what was agreed.
 
 ## Stop condition
 
@@ -41,10 +45,10 @@ Not "enough questions asked" — "nothing left to guess." Five dimensions scored
 
 ```bash
 git clone https://github.com/guanlangzg/requirement-forge.git
-cp -r requirement-forge ~/.zcode/skills/          # user-level, all projects
-# or
-cp -r requirement-forge <your-project>/.agents/skills/   # project-level
+cp -r requirement-forge ~/.agents/skills/         # user-level, all projects
 ```
+
+**Pick one location, not both.** ZCode dedupes skills by *real path*, not by name — two copies at different paths both appear in the `$` menu as `requirement-forge`. If you need a project-local override, put it in `.zcode/skills/` instead; `.zcode` does shadow a same-named `.agents` copy.
 
 **For other agents that read `SKILL.md`** — the format is the [Agent Skills](https://agentskills.io) standard. Drop the directory wherever that tool discovers skills. `~/.claude/skills/` for Claude Code.
 
@@ -54,11 +58,11 @@ cp -r requirement-forge <your-project>/.agents/skills/   # project-level
 
 | File | Lines | Purpose |
 | :--- | ---: | :--- |
-| `SKILL.md` | 274 | The workflow. This is the skill. |
-| `assets/需求文档模板.md` | 102 | 9-section output template (Chinese) |
+| `SKILL.md` | 342 | The workflow. This is the skill. |
+| `assets/需求文档模板.md` | 130 | 9-section output template + interview log (Chinese) |
 | `references/question-bank.md` | 115 | Questions by task type + "anti-questions" for evasive answers |
-| `DESIGN.md` | 275 | Every mechanism traced to its upstream source, plus what was rejected and why |
-| `tests/README.md` | 102 | 5 real test cases, two rounds |
+| `DESIGN.md` | 408 | Every mechanism traced to its upstream source, what was rejected and why, and the revision log |
+| `tests/README.md` | 210 | 8 real test cases across three rounds, including failures found |
 
 ## What it borrows and what it changes
 
@@ -76,9 +80,13 @@ Not borrowed: wayfinder, doubt-driven-development, discernment-nudge, and `to-qu
 
 No upstream code was copied. Mechanisms and a few phrasing ideas were re-written.
 
-## Known gap
+## Known gaps
 
-The 0.35 ambiguity threshold has not been validated end-to-end. All five test cases stopped within the first two rounds, so the exit gate was never exercised. Long-term use is the only way to check it.
+**The 0.35 threshold is borderline.** The one long-flow test that reached the exit gate scored 0.30 — 0.05 under the line. Rescoring the same session with an equally defensible reading (Acceptance 0.75, Alternatives 0.5) gives 0.40 and flips the verdict to "keep asking." The threshold is sensitive to how you score. Whether it should drop to 0.30, or switch to "any dimension ≥ 0.5 means continue," needs more real sessions.
+
+**The enforcement gate was validated by recovery, not prevention.** In testing, the out-of-order question had already been asked; the gate's fallback clause is what caught it. It should prevent drift when nobody is scripting the questions, but that's a design argument, not evidence.
+
+**"Update the file after every answer" got violated in testing.** The rule is right; compliance is not automatic. Worth a harder checkpoint if it keeps slipping.
 
 ## Language
 
